@@ -15,6 +15,10 @@
       --r:16px;
       --pad:16px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+
+      /* lines between colors */
+      --gridline: rgba(255,255,255,.10);
+      --gridgap: 2px;
     }
 
     *{box-sizing:border-box}
@@ -153,11 +157,15 @@
       border-radius: 8px;
     }
 
+    /* LINES BETWEEN COLORS */
     .palette{
       position:absolute;
       inset: 0;
       display:grid;
       grid-template-columns: repeat(6, 1fr);
+      gap: var(--gridgap);
+      background: var(--gridline);
+      padding: var(--gridgap);
     }
 
     .card{
@@ -169,6 +177,8 @@
       cursor:pointer;
       user-select:none;
       transition: filter .15s ease;
+      border-radius: 10px;
+      overflow:hidden;
     }
     .card:hover{ filter: brightness(1.03); }
 
@@ -319,7 +329,7 @@
 
   function rgbToHex(r,g,b){
     const to = (x) => x.toString(16).padStart(2,'0');
-    return '#' + to(r) + to(g) + to(b);
+    return ('#' + to(r) + to(g) + to(b)).toUpperCase();
   }
 
   function rgbToHsl(r,g,b){
@@ -347,12 +357,12 @@
     const m = l - c/2;
     let r1=0,g1=0,b1=0;
 
-    if (0 <= h && h < 60)       { r1=c; g1=x; b1=0; }
-    else if (60 <= h && h < 120){ r1=x; g1=c; b1=0; }
+    if (0 <= h && h < 60)        { r1=c; g1=x; b1=0; }
+    else if (60 <= h && h < 120) { r1=x; g1=c; b1=0; }
     else if (120 <= h && h < 180){ r1=0; g1=c; b1=x; }
     else if (180 <= h && h < 240){ r1=0; g1=x; b1=c; }
     else if (240 <= h && h < 300){ r1=x; g1=0; b1=c; }
-    else                         { r1=c; g1=0; b1=x; }
+    else                          { r1=c; g1=0; b1=x; }
 
     const r = Math.round((r1 + m) * 255);
     const g = Math.round((g1 + m) * 255);
@@ -393,9 +403,10 @@
     }
   }
 
-  // Core: generate colors in the "same family"
-  // Pastel/light mode: clamp saturation lower + luminance higher.
-  function generateDerivedColors(baseHex, n=6, pastelOnly=false){
+  // ---- Generation rules ----
+  // Pastel mode: light + gentle.
+  // Normal mode: still controlled (not too strong).
+  function generateDerivedColors(baseHex, n=6, pastelOnly=false, forbiddenSet=new Set()){
     const {r,g,b} = hexToRgb(baseHex);
     const base = rgbToHsl(r,g,b);
 
@@ -403,16 +414,18 @@
     const colors = [];
     let guard = 0;
 
-    while (colors.length < n && guard < 2500){
+    // Don’t allow returning the base color itself:
+    forbiddenSet.add(baseHex.toUpperCase());
+
+    while (colors.length < n && guard < 5000){
       guard++;
 
-      // Keep hue tight so it still feels like the base color family.
+      // keep hue tight (same family)
       const hueJitter = pastelOnly ? rand(-8, 8) : rand(-10, 10);
 
-      // Pastel mode: softer saturation + high lightness.
-      // Normal mode: wider range.
-      const satJitter   = pastelOnly ? rand(-10, 10) : rand(-14, 14);
-      const lightJitter = pastelOnly ? rand(-8, 12)  : rand(-18, 18);
+      // Normal mode: never too strong -> cap saturation and avoid extreme darkness
+      const satJitter   = pastelOnly ? rand(-10, 10) : rand(-12, 12);
+      const lightJitter = pastelOnly ? rand(-8, 12)  : rand(-14, 14);
 
       const h = (base.h + hueJitter + 360) % 360;
 
@@ -420,22 +433,38 @@
       let l = clamp(base.l + lightJitter, 16, 92);
 
       if (pastelOnly){
-        // Pastel constraints: light + gentle
-        // (These ranges are intentionally "always light".)
-        s = clamp(s, 18, 50);
+        // Pastel constraints
+        s = clamp(s, 18, 45);
         l = clamp(l, 72, 92);
+      } else {
+        // Controlled (non-pastel) constraints
+        // (This is the “never too strong” part.)
+        s = clamp(s, 22, 62);
+        l = clamp(l, 28, 82);
       }
 
       const rgb = hslToRgb(h,s,l);
-      const hex = rgbToHex(rgb.r, rgb.g, rgb.b).toUpperCase();
+      const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
 
-      if (!results.has(hex)){
+      if (!results.has(hex) && !forbiddenSet.has(hex)){
         results.add(hex);
         colors.push(hex);
       }
     }
 
-    while (colors.length < n) colors.push(baseHex.toUpperCase());
+    // worst-case fallback: fill with shifted hues (still safe)
+    while (colors.length < n){
+      const shift = (base.h + 25 * (colors.length + 1)) % 360;
+      const s = pastelOnly ? 32 : 48;
+      const l = pastelOnly ? 84 : 62;
+      const rgb = hslToRgb(shift, s, l);
+      const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+      if (!results.has(hex) && !forbiddenSet.has(hex)){
+        results.add(hex);
+        colors.push(hex);
+      }
+    }
+
     return colors;
   }
 
@@ -479,12 +508,54 @@
     localStorage.setItem('baseColor', h);
   }
 
+  function palettesEqual(a,b){
+    if (!Array.isArray(a) || !Array.isArray(b)) return false;
+    if (a.length !== b.length) return false;
+    for (let i=0;i<a.length;i++){
+      if (normalizeHex(a[i]) !== normalizeHex(b[i])) return false;
+    }
+    return true;
+  }
+
   function generate(){
     const baseHex = normalizeHex(baseInput.value);
     setBase(baseHex);
 
     const pastelOnly = !!pastelOnlyEl.checked;
-    const colors = generateDerivedColors(baseHex, 6, pastelOnly);
+
+    // Read previous palette (to avoid repeating it)
+    let prev = null;
+    try{
+      prev = JSON.parse(localStorage.getItem('lastPalette') || 'null');
+      if (!Array.isArray(prev) || prev.length !== 6) prev = null;
+    }catch{ prev = null; }
+
+    // Make a forbidden set: avoid exact same colors as previous palette too
+    const forbidden = new Set();
+    if (prev){
+      prev.forEach(c => forbidden.add(normalizeHex(c)));
+    }
+
+    let colors = null;
+
+    // Try a few times to guarantee "not the same palette"
+    for (let attempt=0; attempt<12; attempt++){
+      const candidate = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
+
+      // Strong guarantee: palette must not be identical to previous
+      if (!prev || !palettesEqual(candidate, prev)){
+        colors = candidate;
+        break;
+      }
+
+      // If identical (ultra rare), expand forbidden a bit and retry
+      candidate.forEach(c => forbidden.add(normalizeHex(c)));
+    }
+
+    // Final fallback (should never happen)
+    if (!colors){
+      colors = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
+    }
 
     renderPalette(colors);
     localStorage.setItem('lastPalette', JSON.stringify(colors));
@@ -492,10 +563,10 @@
   }
 
   function randomBase(){
-    // Nice random base: good ranges
+    // nice random base: ranges that avoid neon
     const h = rand(0, 360);
-    const s = rand(45, 90);
-    const l = rand(35, 70);
+    const s = rand(35, 70);
+    const l = rand(40, 70);
     const {r,g,b} = hslToRgb(h,s,l);
     setBase(rgbToHex(r,g,b));
     generate();
@@ -523,7 +594,6 @@
 
   // Boot
   const savedBase = localStorage.getItem('baseColor');
-  const savedPalette = localStorage.getItem('lastPalette');
   const savedPastel = localStorage.getItem('pastelOnly');
 
   if (savedPastel != null) pastelOnlyEl.checked = savedPastel === '1';
@@ -531,20 +601,8 @@
   if (savedBase) setBase(savedBase);
   else setBase(baseInput.value);
 
-  if (savedPalette){
-    try{
-      const arr = JSON.parse(savedPalette);
-      if (Array.isArray(arr) && arr.length === 6){
-        renderPalette(arr.map(normalizeHex));
-      } else {
-        generate();
-      }
-    } catch {
-      generate();
-    }
-  } else {
-    generate();
-  }
+  // Always generate once on load (and it will respect the anti-repeat rules)
+  generate();
 })();
 </script>
 </body>
