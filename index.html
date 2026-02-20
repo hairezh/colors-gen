@@ -5,163 +5,368 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>#Colors</title>
+
   <style>
     :root{
-      --bg:#0b0c0f;
-      --fg:#f2f2f2;
-      --muted:rgba(255,255,255,.65);
+      --fg:#e9e9ee;
+      --muted:rgba(233,233,238,.62);
+      --muted2:rgba(233,233,238,.40);
       --border:rgba(255,255,255,.12);
-      --panel:rgba(255,255,255,.06);
-      --shadow: 0 18px 50px rgba(0,0,0,.55);
-      --r:16px;
-      --pad:16px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --panel:rgba(0,0,0,.44);
+      --shadow: 0 10px 30px rgba(0,0,0,.45);
+      --r:14px;
 
-      /* lines between colors */
+      --dockW:62px;
+      --gap:10px;
+
+      color-scheme: dark;
+
+      /* palette grid lines (kept concept, adapted to glass theme) */
       --gridline: rgba(255,255,255,.10);
       --gridgap: 2px;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
     body{
       margin:0;
-      font-family:var(--font);
-      background: radial-gradient(900px 600px at 20% 0%, rgba(255,183,195,.12), transparent 60%),
-                  radial-gradient(900px 600px at 80% 20%, rgba(188,244,222,.10), transparent 55%),
-                  var(--bg);
       color:var(--fg);
+      font: 14px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      background-image: url("https://i.pinimg.com/originals/f5/93/a4/f593a4f4932080fb7b43c6ae96d1a73d.gif");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       overflow:hidden;
     }
 
-    .topbar{
-      position:fixed;
-      inset: 14px 14px auto 14px;
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(900px 520px at 15% 10%, rgba(0,0,0,.16), transparent 55%),
+        radial-gradient(900px 520px at 85% 20%, rgba(0,0,0,.16), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.56));
+      backdrop-filter: blur(0.6px);
+    }
+
+    /* Scrollbar */
+    *{
+      scrollbar-width: thin;
+      scrollbar-color: rgba(220,220,230,.30) rgba(0,0,0,.20);
+    }
+    *::-webkit-scrollbar{ width:10px; height:10px; }
+    *::-webkit-scrollbar-track{ background: rgba(0,0,0,.20); border-radius: 10px; }
+    *::-webkit-scrollbar-thumb{
+      background: rgba(220,220,230,.26);
+      border: 2px solid rgba(0,0,0,.20);
+      border-radius: 10px;
+    }
+    *::-webkit-scrollbar-thumb:hover{ background: rgba(220,220,230,.40); }
+
+    .app{
+      position:relative;
+      z-index:1;
+      height:100%;
       display:flex;
-      gap:12px;
+      flex-direction:column;
+    }
+
+    /* ===== Topbar (skin.ini style) ===== */
+    .topbar{
+      display:flex;
       align-items:center;
-      padding:12px 12px;
-      border:1px solid var(--border);
-      background: rgba(10,10,14,.55);
-      backdrop-filter: blur(10px);
-      border-radius: calc(var(--r) + 6px);
-      box-shadow: var(--shadow);
-      z-index:10;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 12px;
+      border-bottom:1px solid var(--border);
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(3px);
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap:10px;
-      padding:8px 10px;
-      border-radius: 999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
+      min-width:0;
+    }
+    .brand img{
+      width:30px;
+      height:30px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
+      object-fit: cover;
+    }
+    .brand .title{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .brand .title b{
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand .title span{
+      font-size:12px;
+      color:var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .tools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .badge{
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.75);
+      font-weight:900;
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
       white-space:nowrap;
     }
-    .dot{
-      width:10px;height:10px;border-radius:50%;
-      background: linear-gradient(135deg, #ffb7c3, #bcf4de);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.06);
+
+    .btn{
+      cursor:pointer;
+      padding:8px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.78);
+      font-weight:900;
+      transition:110ms linear;
+      user-select:none;
     }
-    .title{
-      font-weight:700;
-      letter-spacing:.2px;
-      font-size:14px;
+    .btn:hover{
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color: rgba(233,233,238,.95);
     }
-    .hint{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.2;
+    .btn.primary{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.16);
+      color: rgba(233,233,238,.95);
     }
 
-    .controls{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      margin-left:auto;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
+    /* base controls: re-skin pill */
     .pill{
       display:flex;
       align-items:center;
       gap:10px;
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
     }
-
     .label{
       font-size:12px;
-      color:var(--muted);
+      color: rgba(233,233,238,.78);
+      font-weight:900;
     }
 
     input[type="color"]{
       width:36px;
       height:28px;
-      border:1px solid var(--border);
+      border:1px solid rgba(255,255,255,.12);
       background: transparent;
       border-radius:10px;
       padding:0;
       cursor:pointer;
     }
 
-    /* Toggle (Pastel mode) */
+    .kbd{
+      font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: rgba(233,233,238,.92);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.24);
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-weight:900;
+      letter-spacing:.3px;
+    }
+
     .toggle{
       display:flex;
       align-items:center;
       gap:8px;
       padding:8px 10px;
       border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
       user-select:none;
       white-space:nowrap;
+      font-weight:900;
+      color: rgba(233,233,238,.85);
     }
     .toggle input{
       width:16px;
       height:16px;
-      accent-color: #ffb7c3;
+      accent-color: #e9e9ee;
       cursor:pointer;
     }
     .toggle span{
       font-size:12px;
-      color: rgba(255,255,255,.85);
-      font-weight:650;
+      color: rgba(233,233,238,.85);
+      font-weight:900;
     }
 
-    .btn{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      color:var(--fg);
-      padding:8px 12px;
-      border-radius:999px;
+    /* ===== Layout with dock + palette ===== */
+    .layout{
+      flex:1; min-height:0;
+      display:grid;
+      grid-template-columns: var(--dockW) 1fr;
+      overflow:hidden;
+    }
+
+    .dock{
+      border-right:1px solid var(--border);
+      background: rgba(0,0,0,.38);
+      backdrop-filter: blur(3px);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      padding:10px 8px;
+      min-height:0;
+      overflow:auto;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    .dockGroup{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      align-items:center;
+      padding-bottom:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+    }
+    .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
+
+    .icoBtn{
+      width:46px;
+      height:46px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(233,233,238,.78);
+      display:grid;
+      place-items:center;
       cursor:pointer;
-      font-weight:650;
-      font-size:12px;
-      transition: transform .08s ease, background .18s ease, border-color .18s ease;
       user-select:none;
+      transition:110ms linear;
+      position:relative;
+      will-change: transform;
+      transform: translateZ(0);
     }
-    .btn:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
-    .btn:active{ transform: translateY(1px); }
-
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size:11px;
-      color: rgba(255,255,255,.75);
-      border:1px solid rgba(255,255,255,.18);
+    .icoBtn:hover{
+      border-color: rgba(255,255,255,.18);
       background: rgba(255,255,255,.06);
-      padding: 2px 7px;
-      border-radius: 8px;
+      color: rgba(233,233,238,.95);
+      transform: translateY(-1px) translateZ(0);
+    }
+    .icoBtn.active{
+      border-color: rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      color: rgba(233,233,238,.98);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
 
-    /* LINES BETWEEN COLORS */
+    .tip{
+      position:absolute;
+      left:58px;
+      top:50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,.70);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:6px 10px;
+      font-size:12px;
+      color: rgba(233,233,238,.92);
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;
+      transition:110ms linear;
+      backdrop-filter: blur(3px);
+    }
+    .icoBtn:hover .tip{ opacity:1; }
+
+    .miniLabel{
+      font-size:11px;
+      color: var(--muted2);
+      text-align:center;
+      line-height:1.2;
+    }
+
+    /* ===== Palette grid ===== */
+    .main{
+      min-height:0;
+      padding:10px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .paletteWrap{
+      flex:1;
+      min-height:0;
+      border:1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(3px);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .paletteHead{
+      padding:10px 10px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      backdrop-filter: blur(4px);
+    }
+
+    .paletteBody{
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+      position:relative;
+    }
+
+    /* lines between colors */
     .palette{
       position:absolute;
-      inset: 0;
+      inset:0;
       display:grid;
       grid-template-columns: repeat(6, 1fr);
       gap: var(--gridgap);
@@ -177,17 +382,17 @@
       padding: 22px 18px;
       cursor:pointer;
       user-select:none;
-      transition: filter .15s ease;
-      border-radius: 10px;
+      transition: filter .15s ease, transform .12s ease;
+      border-radius: 12px;
       overflow:hidden;
     }
-    .card:hover{ filter: brightness(1.03); }
+    .card:hover{ filter: brightness(1.03); transform: translateY(-1px); }
 
     .card::after{
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.35), transparent 55%);
+      background: linear-gradient(to top, rgba(0,0,0,.45), transparent 55%);
       pointer-events:none;
       opacity:.95;
     }
@@ -204,28 +409,28 @@
 
     .hex{
       font-size:14px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:.8px;
       text-transform:uppercase;
       padding:8px 10px;
       border-radius: 999px;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(10,10,14,.22);
+      background: rgba(0,0,0,.24);
       backdrop-filter: blur(6px);
     }
 
     .mini{
       font-size:12px;
-      font-weight:700;
+      font-weight:900;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(10,10,14,.18);
+      background: rgba(0,0,0,.22);
       padding:8px 10px;
       border-radius:999px;
-      color: rgba(255,255,255,.92);
+      color: rgba(233,233,238,.92);
       transition: background .15s ease;
       white-space:nowrap;
     }
-    .mini:hover{ background: rgba(10,10,14,.28); }
+    .mini:hover{ background: rgba(0,0,0,.30); }
 
     .toast{
       position:fixed;
@@ -235,11 +440,11 @@
       padding:10px 12px;
       border-radius:999px;
       border:1px solid var(--border);
-      background: rgba(10,10,14,.65);
+      background: rgba(0,0,0,.65);
       backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
-      color: rgba(255,255,255,.9);
-      font-weight:650;
+      color: rgba(233,233,238,.9);
+      font-weight:900;
       font-size:12px;
       opacity:0;
       pointer-events:none;
@@ -260,45 +465,105 @@
 
     @media (max-width: 980px){
       body{ overflow:auto; }
-      .palette{
-        position:relative;
-        inset:auto;
-        height:auto;
-        grid-template-columns: 1fr;
+      .layout{ grid-template-columns: 1fr; }
+      .dock{
+        flex-direction:row;
+        border-right:0;
+        border-bottom:1px solid var(--border);
+        padding:10px;
+        gap:10px;
       }
+      .dockGroup{
+        flex-direction:row;
+        border-bottom:0;
+        padding-bottom:0;
+        width:auto;
+      }
+      .icoBtn .tip{ display:none; }
+      .main{ padding:10px; }
+      .palette{ position:relative; inset:auto; height:auto; grid-template-columns: 1fr; }
       .card{ min-height: 160px; }
-      .topbar{ position:sticky; top:12px; }
     }
   </style>
 </head>
+
 <body>
-  <div class="topbar">
-    <div class="brand">
-      <div class="dot"></div>
-      <div>
-        <div class="title">Color Generator</div>
-        <div class="hint">Pick a base color and press <span class="kbd">Space</span> to generate🎨</div>
+  <div class="app">
+
+    <!-- TOPBAR (skin.ini style) -->
+    <div class="topbar">
+      <div class="brand">
+        <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
+        <div class="title">
+          <b>Color Generator</b>
+          <span>Pick a base color and press <span class="kbd">Space</span> to generate</span>
+        </div>
+      </div>
+
+      <div class="tools">
+        <div class="pill">
+          <span class="label">Color</span>
+          <input id="baseColor" type="color" value="#FFB7C3" aria-label="Choose base color" />
+          <span id="baseHex" class="kbd">#FFB7C3</span>
+        </div>
+
+        <label class="toggle" title="Generate only light/pastel colors">
+          <input id="pastelOnly" type="checkbox" />
+          <span>Pastel only</span>
+        </label>
+
+        <button id="btnGenerate" class="btn primary" type="button">Generate</button>
+        <button id="btnRandomBase" class="btn" type="button">Random</button>
       </div>
     </div>
 
-    <div class="controls">
-      <div class="pill">
-        <span class="label">Color</span>
-        <input id="baseColor" type="color" value="#FFB7C3" aria-label="Choose base color" />
-        <span id="baseHex" class="kbd">#FFB7C3</span>
-      </div>
+    <div class="layout">
 
-      <label class="toggle" title="Generate only light/pastel colors">
-        <input id="pastelOnly" type="checkbox" />
-        <span>Pastel only</span>
-      </label>
+      <!-- DOCK -->
+      <aside class="dock">
+        <div class="dockGroup">
+          <button class="icoBtn active" type="button" title="Palette">
+            <span aria-hidden="true">🎨</span>
+            <span class="tip">Palette</span>
+          </button>
 
-      <button id="btnGenerate" class="btn" type="button">Generate</button>
-      <button id="btnRandomBase" class="btn" type="button">Random</button>
+          <button class="icoBtn" type="button" title="Generate" id="dockGenerate">
+            <span aria-hidden="true">⚡</span>
+            <span class="tip">Generate</span>
+          </button>
+        </div>
+
+        <div class="dockGroup">
+          <div class="miniLabel">shortcuts</div>
+
+          <button class="icoBtn" type="button" title="Space" id="dockSpace">
+            <span aria-hidden="true">␣</span>
+            <span class="tip">Space</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <section class="paletteWrap">
+          <div class="paletteHead">
+            <div class="tools">
+              <span class="badge">Palette</span>
+              <span class="badge" id="modeBadge">mode: normal</span>
+            </div>
+            <div class="tools">
+              <span class="badge">click a color to copy</span>
+            </div>
+          </div>
+
+          <div class="paletteBody">
+            <main id="palette" class="palette" aria-label="Color palette"></main>
+          </div>
+        </section>
+      </main>
+
     </div>
   </div>
-
-  <main id="palette" class="palette" aria-label="Color palette"></main>
 
   <div id="toast" class="toast" role="status" aria-live="polite">
     <span id="toastSw" class="sw"></span>
@@ -404,9 +669,6 @@
     }
   }
 
-  // ---- Generation rules ----
-  // Pastel mode: light + gentle.
-  // Normal mode: still controlled (not too strong).
   function generateDerivedColors(baseHex, n=6, pastelOnly=false, forbiddenSet=new Set()){
     const {r,g,b} = hexToRgb(baseHex);
     const base = rgbToHsl(r,g,b);
@@ -415,16 +677,12 @@
     const colors = [];
     let guard = 0;
 
-    // Don’t allow returning the base color itself:
     forbiddenSet.add(baseHex.toUpperCase());
 
     while (colors.length < n && guard < 5000){
       guard++;
 
-      // keep hue tight (same family)
       const hueJitter = pastelOnly ? rand(-8, 8) : rand(-10, 10);
-
-      // Normal mode: never too strong -> cap saturation and avoid extreme darkness
       const satJitter   = pastelOnly ? rand(-10, 10) : rand(-12, 12);
       const lightJitter = pastelOnly ? rand(-8, 12)  : rand(-14, 14);
 
@@ -434,12 +692,9 @@
       let l = clamp(base.l + lightJitter, 16, 92);
 
       if (pastelOnly){
-        // Pastel constraints
         s = clamp(s, 18, 45);
         l = clamp(l, 72, 92);
       } else {
-        // Controlled (non-pastel) constraints
-        // (This is the “never too strong” part.)
         s = clamp(s, 22, 62);
         l = clamp(l, 28, 82);
       }
@@ -453,7 +708,6 @@
       }
     }
 
-    // worst-case fallback: fill with shifted hues (still safe)
     while (colors.length < n){
       const shift = (base.h + 25 * (colors.length + 1)) % 360;
       const s = pastelOnly ? 32 : 48;
@@ -518,42 +772,40 @@
     return true;
   }
 
+  function updateModeBadge(){
+    const badge = document.getElementById('modeBadge');
+    if(badge) badge.textContent = `mode: ${pastelOnlyEl.checked ? 'pastel' : 'normal'}`;
+  }
+
   function generate(){
     const baseHex = normalizeHex(baseInput.value);
     setBase(baseHex);
 
     const pastelOnly = !!pastelOnlyEl.checked;
+    updateModeBadge();
 
-    // Read previous palette (to avoid repeating it)
     let prev = null;
     try{
       prev = JSON.parse(localStorage.getItem('lastPalette') || 'null');
       if (!Array.isArray(prev) || prev.length !== 6) prev = null;
     }catch{ prev = null; }
 
-    // Make a forbidden set: avoid exact same colors as previous palette too
     const forbidden = new Set();
-    if (prev){
-      prev.forEach(c => forbidden.add(normalizeHex(c)));
-    }
+    if (prev) prev.forEach(c => forbidden.add(normalizeHex(c)));
 
     let colors = null;
 
-    // Try a few times to guarantee "not the same palette"
     for (let attempt=0; attempt<12; attempt++){
       const candidate = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
 
-      // Strong guarantee: palette must not be identical to previous
       if (!prev || !palettesEqual(candidate, prev)){
         colors = candidate;
         break;
       }
 
-      // If identical (ultra rare), expand forbidden a bit and retry
       candidate.forEach(c => forbidden.add(normalizeHex(c)));
     }
 
-    // Final fallback (should never happen)
     if (!colors){
       colors = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
     }
@@ -564,7 +816,6 @@
   }
 
   function randomBase(){
-    // nice random base: ranges that avoid neon
     const h = rand(0, 360);
     const s = rand(35, 70);
     const l = rand(40, 70);
@@ -573,7 +824,6 @@
     generate();
   }
 
-  // Events
   baseInput.addEventListener('input', () => {
     baseHexEl.textContent = normalizeHex(baseInput.value);
   });
@@ -582,6 +832,12 @@
   pastelOnlyEl.addEventListener('change', generate);
   btnGenerate.addEventListener('click', generate);
   btnRandomBase.addEventListener('click', randomBase);
+
+  // dock buttons (extra UI)
+  const dockGen = document.getElementById('dockGenerate');
+  const dockSpace = document.getElementById('dockSpace');
+  if(dockGen) dockGen.addEventListener('click', generate);
+  if(dockSpace) dockSpace.addEventListener('click', generate);
 
   window.addEventListener('keydown', (e) => {
     const tag = (document.activeElement?.tagName || '').toLowerCase();
@@ -593,7 +849,6 @@
     }
   }, { passive:false });
 
-  // Boot
   const savedBase = localStorage.getItem('baseColor');
   const savedPastel = localStorage.getItem('pastelOnly');
 
@@ -602,7 +857,7 @@
   if (savedBase) setBase(savedBase);
   else setBase(baseInput.value);
 
-  // Always generate once on load (and it will respect the anti-repeat rules)
+  updateModeBadge();
   generate();
 })();
 </script>
