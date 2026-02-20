@@ -19,9 +19,9 @@
       --dockW:62px;
       --gap:10px;
 
-      /* grid lines */
+      /* grid */
       --gridline: rgba(255,255,255,.10);
-      --gridgap: 8px;
+      --gridgap: 10px;
 
       color-scheme: dark;
     }
@@ -181,7 +181,6 @@
       color: rgba(233,233,238,.78);
       font-weight:900;
     }
-
     input[type="color"]{
       width:36px;
       height:28px;
@@ -191,7 +190,6 @@
       padding:0;
       cursor:pointer;
     }
-
     .kbd{
       font: 12px/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       color: rgba(233,233,238,.92);
@@ -202,7 +200,6 @@
       font-weight:900;
       letter-spacing:.3px;
     }
-
     .toggle{
       display:flex;
       align-items:center;
@@ -217,8 +214,7 @@
       color: rgba(233,233,238,.85);
     }
     .toggle input{
-      width:16px;
-      height:16px;
+      width:16px;height:16px;
       accent-color: #e9e9ee;
       cursor:pointer;
     }
@@ -287,7 +283,6 @@
       color: rgba(233,233,238,.98);
       box-shadow: 0 10px 30px rgba(0,0,0,.35);
     }
-
     .tip{
       position:absolute;
       left:58px;
@@ -314,18 +309,17 @@
       line-height:1.2;
     }
 
-    /* ===== MAIN: left panel only, right side shows background ===== */
+    /* ===== Main / Card (like original) ===== */
     .main{
       min-height:0;
       padding:10px;
       overflow:hidden;
-      display:grid;
-      grid-template-columns: 420px 1fr; /* LEFT palette card + FREE background */
-      gap:10px;
-      align-items:start;
+      display:flex;
     }
 
     .paletteWrap{
+      flex:1;
+      min-height:0;
       border:1px solid var(--border);
       background: var(--panel);
       backdrop-filter: blur(3px);
@@ -334,8 +328,6 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      min-height: 420px;
-      max-height: calc(100vh - 120px);
     }
 
     .paletteHead{
@@ -359,58 +351,60 @@
       flex:1;
     }
 
-    /* ===== Cubinhos ===== */
+    /* ===== Cubes grid: organized, big, like original area ===== */
     .palette{
       display:grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr)); /* 10 cubos => 5x2 */
+      grid-template-columns: repeat(5, minmax(0, 1fr)); /* 10 = 5x2 */
       gap: var(--gridgap);
+      padding: 2px;
     }
 
-    .card{
+    .cube{
       position:relative;
-      aspect-ratio: 1 / 1;     /* QUADRADO */
-      border-radius: 14px;
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
       border:1px solid rgba(255,255,255,.12);
       overflow:hidden;
       cursor:pointer;
       user-select:none;
       transition: transform .12s ease, filter .15s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
     }
-    .card:hover{
-      transform: translateY(-1px);
+    .cube:hover{
+      transform: translateY(-2px);
       filter: brightness(1.03);
     }
 
-    .card::after{
+    .cube::after{
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.55), transparent 65%);
+      background: linear-gradient(to top, rgba(0,0,0,.55), transparent 68%);
       pointer-events:none;
-      opacity:.92;
+      opacity:.95;
     }
 
     .meta{
       position:absolute;
-      left:8px;
-      right:8px;
-      bottom:8px;
+      left:10px;
+      right:10px;
+      bottom:10px;
       z-index:2;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:10px;
     }
 
     .hex{
-      font-size:11px;
+      font-size:12px;
       font-weight:900;
-      letter-spacing:.6px;
+      letter-spacing:.7px;
       text-transform:uppercase;
-      padding:6px 8px;
+      padding:7px 10px;
       border-radius: 999px;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.28);
+      background: rgba(0,0,0,.26);
       backdrop-filter: blur(6px);
       max-width: 100%;
       overflow:hidden;
@@ -419,19 +413,14 @@
     }
 
     .mini{
-      font-size:11px;
+      font-size:12px;
       font-weight:900;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.26);
-      padding:6px 8px;
+      background: rgba(0,0,0,.22);
+      padding:7px 10px;
       border-radius:999px;
       color: rgba(233,233,238,.92);
       white-space:nowrap;
-    }
-
-    /* Right side is intentionally empty to show background */
-    .bgSpace{
-      min-height: 200px;
     }
 
     .toast{
@@ -483,14 +472,8 @@
       }
       .icoBtn .tip{ display:none; }
 
-      .main{
-        grid-template-columns: 1fr; /* stack */
-      }
-      .paletteWrap{
-        max-height: none;
-      }
       .palette{
-        grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile: cubos maiores */
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile: cubos grandes */
       }
     }
   </style>
@@ -550,7 +533,6 @@
       </aside>
 
       <main class="main">
-        <!-- LEFT: cubinhos -->
         <section class="paletteWrap">
           <div class="paletteHead">
             <div class="tools">
@@ -559,7 +541,7 @@
               <span class="badge">10 colors</span>
             </div>
             <div class="tools">
-              <span class="badge">click to copy</span>
+              <span class="badge">click a cube to copy</span>
             </div>
           </div>
 
@@ -567,9 +549,6 @@
             <main id="palette" class="palette" aria-label="Color palette"></main>
           </div>
         </section>
-
-        <!-- RIGHT: vazio pra mostrar o background -->
-        <section class="bgSpace" aria-hidden="true"></section>
       </main>
     </div>
   </div>
@@ -688,7 +667,7 @@
 
     forbiddenSet.add(baseHex.toUpperCase());
 
-    while (colors.length < n && guard < 7000){
+    while (colors.length < n && guard < 8000){
       guard++;
 
       const hueJitter = pastelOnly ? rand(-8, 8) : rand(-10, 10);
@@ -718,7 +697,7 @@
     }
 
     while (colors.length < n){
-      const shift = (base.h + 20 * (colors.length + 1)) % 360;
+      const shift = (base.h + 18 * (colors.length + 1)) % 360;
       const s = pastelOnly ? 32 : 48;
       const l = pastelOnly ? 84 : 62;
       const rgb = hslToRgb(shift, s, l);
@@ -735,11 +714,11 @@
   function renderPalette(colors){
     paletteEl.innerHTML = '';
     colors.forEach((hex) => {
-      const card = document.createElement('section');
-      card.className = 'card';
-      card.style.background = hex;
-      card.setAttribute('data-hex', hex);
-      card.setAttribute('aria-label', `Color ${hex}. Click to copy.`);
+      const cube = document.createElement('section');
+      cube.className = 'cube';
+      cube.style.background = hex;
+      cube.setAttribute('data-hex', hex);
+      cube.setAttribute('aria-label', `Color ${hex}. Click to copy.`);
 
       const meta = document.createElement('div');
       meta.className = 'meta';
@@ -754,14 +733,14 @@
 
       meta.appendChild(hexEl);
       meta.appendChild(mini);
-      card.appendChild(meta);
+      cube.appendChild(meta);
 
-      card.addEventListener('click', async () => {
+      cube.addEventListener('click', async () => {
         const ok = await copyToClipboard(hex);
         showToast(ok ? `Copied: ${hex}` : `Couldn’t copy 😅`, hex);
       });
 
-      paletteEl.appendChild(card);
+      paletteEl.appendChild(cube);
     });
   }
 
@@ -796,7 +775,7 @@
     let prev = null;
     try{
       prev = JSON.parse(localStorage.getItem('lastPalette') || 'null');
-      if (!Array.isArray(prev) || prev.length !== 10) prev = null;  // <-- agora 10
+      if (!Array.isArray(prev) || prev.length !== 10) prev = null;
     }catch{ prev = null; }
 
     const forbidden = new Set();
@@ -806,7 +785,6 @@
 
     for (let attempt=0; attempt<12; attempt++){
       const candidate = generateDerivedColors(baseHex, 10, pastelOnly, new Set(forbidden));
-
       if (!prev || !palettesEqual(candidate, prev)){
         colors = candidate;
         break;
