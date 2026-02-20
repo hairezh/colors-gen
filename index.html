@@ -19,11 +19,11 @@
       --dockW:62px;
       --gap:10px;
 
-      color-scheme: dark;
-
-      /* palette grid lines (kept concept, adapted to glass theme) */
+      /* grid lines */
       --gridline: rgba(255,255,255,.10);
-      --gridgap: 2px;
+      --gridgap: 8px;
+
+      color-scheme: dark;
     }
 
     *{ box-sizing:border-box; }
@@ -75,7 +75,7 @@
       flex-direction:column;
     }
 
-    /* ===== Topbar (skin.ini style) ===== */
+    /* ===== Topbar ===== */
     .topbar{
       display:flex;
       align-items:center;
@@ -85,7 +85,6 @@
       border-bottom:1px solid var(--border);
       background: rgba(0,0,0,.38);
       backdrop-filter: blur(3px);
-      will-change: transform;
       transform: translateZ(0);
     }
 
@@ -96,8 +95,7 @@
       min-width:0;
     }
     .brand img{
-      width:30px;
-      height:30px;
+      width:30px;height:30px;
       border-radius:10px;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.25);
@@ -169,7 +167,6 @@
       color: rgba(233,233,238,.95);
     }
 
-    /* base controls: re-skin pill */
     .pill{
       display:flex;
       align-items:center;
@@ -231,7 +228,7 @@
       font-weight:900;
     }
 
-    /* ===== Layout with dock + palette ===== */
+    /* ===== Layout ===== */
     .layout{
       flex:1; min-height:0;
       display:grid;
@@ -250,7 +247,6 @@
       padding:10px 8px;
       min-height:0;
       overflow:auto;
-      will-change: transform;
       transform: translateZ(0);
     }
 
@@ -266,8 +262,7 @@
     .dockGroup:last-child{ border-bottom:0; padding-bottom:0; }
 
     .icoBtn{
-      width:46px;
-      height:46px;
+      width:46px;height:46px;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
       background: rgba(0,0,0,.22);
@@ -278,7 +273,6 @@
       user-select:none;
       transition:110ms linear;
       position:relative;
-      will-change: transform;
       transform: translateZ(0);
     }
     .icoBtn:hover{
@@ -320,18 +314,18 @@
       line-height:1.2;
     }
 
-    /* ===== Palette grid ===== */
+    /* ===== MAIN: left panel only, right side shows background ===== */
     .main{
       min-height:0;
       padding:10px;
       overflow:hidden;
-      display:flex;
-      flex-direction:column;
+      display:grid;
+      grid-template-columns: 420px 1fr; /* LEFT palette card + FREE background */
+      gap:10px;
+      align-items:start;
     }
 
     .paletteWrap{
-      flex:1;
-      min-height:0;
       border:1px solid var(--border);
       background: var(--panel);
       backdrop-filter: blur(3px);
@@ -340,6 +334,8 @@
       overflow:hidden;
       display:flex;
       flex-direction:column;
+      min-height: 420px;
+      max-height: calc(100vh - 120px);
     }
 
     .paletteHead{
@@ -357,80 +353,86 @@
     }
 
     .paletteBody{
-      flex:1;
+      padding:12px;
+      overflow:auto;
       min-height:0;
-      overflow:hidden;
-      position:relative;
+      flex:1;
     }
 
-    /* lines between colors */
+    /* ===== Cubinhos ===== */
     .palette{
-      position:absolute;
-      inset:0;
       display:grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, minmax(0, 1fr)); /* 10 cubos => 5x2 */
       gap: var(--gridgap);
-      background: var(--gridline);
-      padding: var(--gridgap);
     }
 
     .card{
       position:relative;
-      display:flex;
-      align-items:flex-end;
-      justify-content:center;
-      padding: 22px 18px;
+      aspect-ratio: 1 / 1;     /* QUADRADO */
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden;
       cursor:pointer;
       user-select:none;
-      transition: filter .15s ease, transform .12s ease;
-      border-radius: 12px;
-      overflow:hidden;
+      transition: transform .12s ease, filter .15s ease;
     }
-    .card:hover{ filter: brightness(1.03); transform: translateY(-1px); }
+    .card:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
 
     .card::after{
       content:"";
       position:absolute;
       inset:0;
-      background: linear-gradient(to top, rgba(0,0,0,.45), transparent 55%);
+      background: linear-gradient(to top, rgba(0,0,0,.55), transparent 65%);
       pointer-events:none;
-      opacity:.95;
+      opacity:.92;
     }
 
     .meta{
-      position:relative;
+      position:absolute;
+      left:8px;
+      right:8px;
+      bottom:8px;
       z-index:2;
-      width:100%;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
     }
 
     .hex{
-      font-size:14px;
+      font-size:11px;
       font-weight:900;
-      letter-spacing:.8px;
+      letter-spacing:.6px;
       text-transform:uppercase;
-      padding:8px 10px;
+      padding:6px 8px;
       border-radius: 999px;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.24);
+      background: rgba(0,0,0,.28);
       backdrop-filter: blur(6px);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
     .mini{
-      font-size:12px;
+      font-size:11px;
       font-weight:900;
       border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.22);
-      padding:8px 10px;
+      background: rgba(0,0,0,.26);
+      padding:6px 8px;
       border-radius:999px;
       color: rgba(233,233,238,.92);
-      transition: background .15s ease;
       white-space:nowrap;
     }
-    .mini:hover{ background: rgba(0,0,0,.30); }
+
+    /* Right side is intentionally empty to show background */
+    .bgSpace{
+      min-height: 200px;
+    }
 
     .toast{
       position:fixed;
@@ -480,9 +482,16 @@
         width:auto;
       }
       .icoBtn .tip{ display:none; }
-      .main{ padding:10px; }
-      .palette{ position:relative; inset:auto; height:auto; grid-template-columns: 1fr; }
-      .card{ min-height: 160px; }
+
+      .main{
+        grid-template-columns: 1fr; /* stack */
+      }
+      .paletteWrap{
+        max-height: none;
+      }
+      .palette{
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* mobile: cubos maiores */
+      }
     }
   </style>
 </head>
@@ -490,7 +499,6 @@
 <body>
   <div class="app">
 
-    <!-- TOPBAR (skin.ini style) -->
     <div class="topbar">
       <div class="brand">
         <img alt="icon" src="https://i.pinimg.com/originals/da/b4/cb/dab4cbf31e4e8d7688b0e830d5d640f1.gif">
@@ -518,8 +526,6 @@
     </div>
 
     <div class="layout">
-
-      <!-- DOCK -->
       <aside class="dock">
         <div class="dockGroup">
           <button class="icoBtn active" type="button" title="Palette">
@@ -543,16 +549,17 @@
         </div>
       </aside>
 
-      <!-- MAIN -->
       <main class="main">
+        <!-- LEFT: cubinhos -->
         <section class="paletteWrap">
           <div class="paletteHead">
             <div class="tools">
               <span class="badge">Palette</span>
               <span class="badge" id="modeBadge">mode: normal</span>
+              <span class="badge">10 colors</span>
             </div>
             <div class="tools">
-              <span class="badge">click a color to copy</span>
+              <span class="badge">click to copy</span>
             </div>
           </div>
 
@@ -560,8 +567,10 @@
             <main id="palette" class="palette" aria-label="Color palette"></main>
           </div>
         </section>
-      </main>
 
+        <!-- RIGHT: vazio pra mostrar o background -->
+        <section class="bgSpace" aria-hidden="true"></section>
+      </main>
     </div>
   </div>
 
@@ -669,7 +678,7 @@
     }
   }
 
-  function generateDerivedColors(baseHex, n=6, pastelOnly=false, forbiddenSet=new Set()){
+  function generateDerivedColors(baseHex, n=10, pastelOnly=false, forbiddenSet=new Set()){
     const {r,g,b} = hexToRgb(baseHex);
     const base = rgbToHsl(r,g,b);
 
@@ -679,7 +688,7 @@
 
     forbiddenSet.add(baseHex.toUpperCase());
 
-    while (colors.length < n && guard < 5000){
+    while (colors.length < n && guard < 7000){
       guard++;
 
       const hueJitter = pastelOnly ? rand(-8, 8) : rand(-10, 10);
@@ -709,7 +718,7 @@
     }
 
     while (colors.length < n){
-      const shift = (base.h + 25 * (colors.length + 1)) % 360;
+      const shift = (base.h + 20 * (colors.length + 1)) % 360;
       const s = pastelOnly ? 32 : 48;
       const l = pastelOnly ? 84 : 62;
       const rgb = hslToRgb(shift, s, l);
@@ -787,7 +796,7 @@
     let prev = null;
     try{
       prev = JSON.parse(localStorage.getItem('lastPalette') || 'null');
-      if (!Array.isArray(prev) || prev.length !== 6) prev = null;
+      if (!Array.isArray(prev) || prev.length !== 10) prev = null;  // <-- agora 10
     }catch{ prev = null; }
 
     const forbidden = new Set();
@@ -796,18 +805,17 @@
     let colors = null;
 
     for (let attempt=0; attempt<12; attempt++){
-      const candidate = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
+      const candidate = generateDerivedColors(baseHex, 10, pastelOnly, new Set(forbidden));
 
       if (!prev || !palettesEqual(candidate, prev)){
         colors = candidate;
         break;
       }
-
       candidate.forEach(c => forbidden.add(normalizeHex(c)));
     }
 
     if (!colors){
-      colors = generateDerivedColors(baseHex, 6, pastelOnly, new Set(forbidden));
+      colors = generateDerivedColors(baseHex, 10, pastelOnly, new Set(forbidden));
     }
 
     renderPalette(colors);
@@ -833,7 +841,6 @@
   btnGenerate.addEventListener('click', generate);
   btnRandomBase.addEventListener('click', randomBase);
 
-  // dock buttons (extra UI)
   const dockGen = document.getElementById('dockGenerate');
   const dockSpace = document.getElementById('dockSpace');
   if(dockGen) dockGen.addEventListener('click', generate);
@@ -853,7 +860,6 @@
   const savedPastel = localStorage.getItem('pastelOnly');
 
   if (savedPastel != null) pastelOnlyEl.checked = savedPastel === '1';
-
   if (savedBase) setBase(savedBase);
   else setBase(baseInput.value);
 
